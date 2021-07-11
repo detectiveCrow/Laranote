@@ -20,16 +20,6 @@
         </div>
         <div class="note-edit-section">
           <div class="note-edit-section-field">
-            <label> Tags </label>
-            <note-tag-input
-              :selected-tag-list="formData.tags"
-              :suggestion-list="propTagList"
-            />
-            <span>{{ tagError }}</span>
-          </div>
-        </div>
-        <div class="note-edit-section">
-          <div class="note-edit-section-field">
             <label for="contents"> Contents </label>
             <div class="note-edit-section-field-tab">
               <nav>
@@ -64,6 +54,16 @@
               </div>
               <ErrorMessage name="contents" />
             </div>
+          </div>
+        </div>
+        <div class="note-edit-section">
+          <div class="note-edit-section-field">
+            <label> Tags </label>
+            <note-tag-input
+              :tags="formData.tags"
+              @update:tags="formData.tags = $event"
+            />
+            <span>{{ tagError }}</span>
           </div>
         </div>
         <div class="note-edit-section">
@@ -162,7 +162,9 @@ export default {
       // update
       this.formData.title = this.propTitle;
       this.formData.contents = this.propContents;
-      this.formData.tags = this.propTags;
+      this.propTags.forEach((tag) => {
+        this.formData.tags.push({value: tag.title, color: tag.color_code})
+      });
 
       this.modalData.header = "Update this note";
       this.modalData.body = "are you sure overwrite this note?";
@@ -176,9 +178,6 @@ export default {
   },
   methods: {
     confirmSubmit() {
-      if (!this.tagValidate()) {
-        return;
-      }
       this.isModalOpen = true;
     },
     closeModal() {
@@ -213,15 +212,6 @@ export default {
     },
     toggleTabs(id) {
       this.currentTab = id;
-    },
-    tagValidate() {
-      if (this.formData.tags.length <= 0) {
-        this.tagError = "tags must choose at least 1";
-        return false;
-      } else {
-        this.tagError = null;
-        return true;
-      }
     },
   },
 };
